@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.ListAdapter
 import com.example.networkretrofit.data.response.CustomerReviewsItem
 import com.example.networkretrofit.databinding.ItemReviewBinding
 
-
 class ReviewAdapter : ListAdapter<CustomerReviewsItem, ReviewAdapter.MyViewHolder>(DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {

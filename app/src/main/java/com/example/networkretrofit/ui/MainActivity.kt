@@ -1,21 +1,23 @@
 package com.example.networkretrofit.ui
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.networkretrofit.data.response.CustomerReviewsItem
 import com.example.networkretrofit.data.response.NetworkResponse
+import com.example.networkretrofit.data.response.PostReviewResponse
 import com.example.networkretrofit.data.response.Restaurant
 import com.example.networkretrofit.data.retrofit.ApiConfig
 import com.example.networkretrofit.databinding.ActivityMainBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.http.Tag
 
 class MainActivity : AppCompatActivity() {
 
@@ -40,6 +42,13 @@ class MainActivity : AppCompatActivity() {
         binding.rvReview.addItemDecoration(itemDecoration)
 
         findRestaurant()
+
+        binding.btnSend.setOnClickListener { view ->
+            postReview(binding.edReview.text.toString())
+
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+        }
 
     }
 
@@ -74,6 +83,31 @@ class MainActivity : AppCompatActivity() {
         
     }
 
+    private fun postReview(review: String) {
+        showLoading(true)
+
+        val client = ApiConfig.getApiService().postReview(RESTAURANT_ID, "Johannes", review)
+        client.enqueue(object : Callback<PostReviewResponse> {
+            override fun onResponse(
+                call: Call<PostReviewResponse>,
+                response: Response<PostReviewResponse>,
+            ) {
+                showLoading(false)
+                val responseBody = response.body()
+                if (response.isSuccessful && responseBody != null) {
+                    setReviewData(responseBody.customerReviews)
+                } else {
+                    Log.e(TAG, "onFailure: ${response.message()}")
+                }
+            }
+
+            override fun onFailure(call: Call<PostReviewResponse>, t: Throwable) {
+                Log.e(TAG,"onFailure: ${t.message}")
+            }
+
+        })
+    }
+
     private fun setNetworkData(restaurant: Restaurant) {
         binding.tvTitle.text = restaurant.name
         binding.tvDescription.text = restaurant.description
@@ -98,7 +132,6 @@ class MainActivity : AppCompatActivity() {
         } else {
             binding.progressBar.visibility = View.GONE
         }
-
-
     }
+
 }
