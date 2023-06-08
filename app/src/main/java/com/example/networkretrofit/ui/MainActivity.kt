@@ -1,7 +1,8 @@
-package com.example.networkretrofit
+package com.example.networkretrofit.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.example.networkretrofit.R
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
